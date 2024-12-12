@@ -1,48 +1,34 @@
-// Получаем элементы из HTML
-const clickerCounter = document.getElementById('clicker__counter');
-const cookie = document.getElementById('cookie');
-const clickSpeedElement = document.createElement('div');
-clickSpeedElement.id = 'clicker__speed';
-clickSpeedElement.textContent = 'Скорость клика: 0';
-document.querySelector('.clicker__status').appendChild(clickSpeedElement);
+// Получаем начальное значение таймера из HTML
+const initialSeconds = parseInt(document.getElementById('timer').innerText);
 
-// Инициализируем счётчик кликов и время последнего клика
-let clickCount = 0;
-let lastClickTime = null;
-
-// Функция для обновления счётчика кликов
-function updateClickerCounter() {
-    clickerCounter.textContent = clickCount;
+// Функция для форматирования времени в hh:mm:ss
+function formatTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return [h, m, s].map(n => String(n).padStart(2, '0')).join(':');
 }
 
-// Функция для изменения размера печеньки
-function toggleCookieSize() {
-    const currentWidth = cookie.width;
-    const currentHeight = cookie.height;
-    if (currentWidth === 200) {
-        cookie.width = 180;
-        cookie.height = 180;
-    } else {
-        cookie.width = 200;
-        cookie.height = 200;
-    }
+// Функция для обновления таймера
+function updateTimer(seconds) {
+    const timerElement = document.getElementById('timer');
+    timerElement.innerText = formatTime(seconds);
 }
 
-// Функция для обновления скорости клика
-function updateClickSpeed() {
-    const currentTime = new Date().getTime();
-    if (lastClickTime) {
-        const timeDiff = (currentTime - lastClickTime) / 1000; // Время в секундах
-        const clickSpeed = 1 / timeDiff;
-        clickSpeedElement.textContent = `Скорость клика: ${clickSpeed.toFixed(2)}`;
-    }
-    lastClickTime = currentTime;
+// Функция для обратного отсчёта
+function countdown() {
+    let timeLeft = initialSeconds;
+
+    const intervalId = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(intervalId);
+            alert('Вы победили в конкурсе!');
+        } else {
+            updateTimer(timeLeft);
+            timeLeft--;
+        }
+    }, 1000);
 }
 
-// Обработчик события клика на печеньку
-cookie.onclick = function() {
-    clickCount++;
-    updateClickerCounter();
-    toggleCookieSize();
-    updateClickSpeed();
-};
+// Запускаем обратный отсчёт
+countdown();
